@@ -1,5 +1,6 @@
 package com.ksem.oil.config;
 
+import com.ksem.oil.domain.repository.TopicEntryEntityRepository;
 import com.ksem.oil.topicServer.api.TopicServer;
 import com.ksem.oil.topicServer.api.impl.DynamicServer;
 import org.modelmapper.ModelMapper;
@@ -32,8 +33,11 @@ public class MainConfig {
         return modelMapper;
     }
 
+    @Autowired
+    TopicEntryEntityRepository topicEntryEntityRepository;
+
     @Bean
     public TopicServer getTopicServer(){
-        return new DynamicServer(factory);
+        return new DynamicServer(topicEntryEntityRepository, modelMapper());
     }
 }

@@ -1,0 +1,19 @@
+@startuml
+
+actor "АЗС" as azs #red
+control Kafka as esb
+database "Центральная база" as cb
+actor "Офис" as office #lightgreen
+autonumber
+
+azs->esb :записан документ
+esb->cb :записи в соот.\n потокам таблицы \n(продажи, деньги)
+office<-->cb :просмотр \nполученних данних
+office->cb :корректирующая запись
+cb--->esb :уведомление о изменениях
+activate azs
+azs->azs:запланированное \nдействие (раз в 10 минут)
+azs o<->o esb : запрос новых записей
+deactivate azs
+esb->azs:чтение и \nприменение измнений
+@enduml

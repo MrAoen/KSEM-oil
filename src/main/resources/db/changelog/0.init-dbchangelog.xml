@@ -1,0 +1,117 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0-azs table" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="azs"/>
+            </not>
+        </preConditions>
+        <createTable tableName="azs">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_azs" unique="true"/>
+            </column>
+            <column name="name" type="varchar(64)"/>
+            <column name="extid" type="uniqueidentifier"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1-customer table" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="customer"/>
+            </not>
+        </preConditions>
+        <createTable tableName="customer">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_customer" unique="true"/>
+            </column>
+            <column name="name" type="varchar(64)"/>
+            <column name="global_id" type="uniqueidentifier"/>
+            <column name="azs" type="bigint"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="azs" baseTableName="customer"
+                                 constraintName="azs_customer_id_fk" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="azs" />
+    </changeSet>
+
+    <changeSet id="2-gas_sales table" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="gas_sales"/>
+            </not>
+        </preConditions>
+        <createTable tableName="gas_sales">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_sales" unique="true"/>
+            </column>
+            <column name="azs" type="bigint"/>
+            <column name="g_type" type="int"/>
+            <column name="tank" type="int"/>
+            <column name="trk" type="int"/>
+            <column name="sales_type" type="int"/>
+            <column name="global_sales_type" type="int"/>
+            <column name="shift" type="int"/>
+            <column name="liter" type="numeric(12,3)"/>
+            <column name="count" type="numeric(12,3)"/>
+            <column name="price" type="numeric(12,4)"/>
+            <column name="sum" type="numeric(12,2)"/>
+            <column name="extid" type="uniqueidentifier"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="azs" baseTableName="gas_sales"
+                                 constraintName="azs_sales_id_fk" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="azs" />
+    </changeSet>
+
+    <changeSet id="3-money_transaction table" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="money_transactions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="money_transactions">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_money_transactions" unique="true"/>
+            </column>
+            <column name="azs" type="bigint"/>
+            <column name="customer" type="bigint"/>
+            <column name="shift" type="int"/>
+            <column name="sales_type" type="int"/>
+            <column name="global_sales_type" type="int"/>
+            <column name="cost_item" type="uniqueidentifier"/>
+            <column name="sum" type="numeric(12,2)"/>
+            <column name="extid" type="uniqueidentifier"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="azs" baseTableName="money_transactions"
+                                 constraintName="azs_money_transaction_id_fk" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="azs" />
+        <addForeignKeyConstraint baseColumnNames="customer" baseTableName="money_transactions"
+                                 constraintName="customer_money_transaction_id_fk" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="customer" />
+    </changeSet>
+
+    <changeSet id="4-topic table (service table)" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="topics"/>
+            </not>
+        </preConditions>
+        <createTable tableName="topics">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="topic_pk" unique="true"/>
+            </column>
+            <column name="name" type="varchar(64)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

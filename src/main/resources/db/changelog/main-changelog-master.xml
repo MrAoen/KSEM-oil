@@ -9,6 +9,6 @@
     http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd ">
 
 
-    <!--<include file="dev/0.init-dbchangelog.xml" relativeToChangelogFile="true" />-->
+    <include file="0.init-dbchangelog.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
