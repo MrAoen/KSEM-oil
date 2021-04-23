@@ -37,6 +37,6 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> azsKafkaListenerContainerFactory() {
-        return kafkaListenerContainerFactory("AZS-to-Central");
+        return kafkaListenerContainerFactory("AZS2Central");
     }
 }

@@ -31,7 +31,7 @@ public class CentralPointListener {
     @Autowired
     ApplicationContext context;
 
-    @KafkaListener(topics = "AZS-to-Central")
+    @KafkaListener(topics = "AZS2Central")
     public void pollCentralMessages(@Payload String message,
         @Header(KafkaHeaders.OFFSET) Long offset
         ) {
@@ -59,14 +59,13 @@ public class CentralPointListener {
                         Object service = context.getBean(clazz);
                         Method method = Arrays.stream(clazz.getMethods()).filter(p->p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
                         Object result = method.invoke(service,msg);
-                        //TODO post process with resul object
                     }catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
                         throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
                     }
+                    msg.setIndex(offset);
                 } catch (JsonProcessingException e) {
                     errorCounter += ","+index;
                 }
-                msg.setIndex(offset);
             }
         }
         if(!errorCounter.isEmpty())
