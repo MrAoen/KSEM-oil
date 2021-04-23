@@ -39,7 +39,7 @@ public class CentralPointListener {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         objectMapper.setDateFormat(df);
         objectMapper.registerModule(new JavaTimeModule());
-        JSONArray incomeObjects = null;
+        JSONArray incomeObjects = new JSONArray();
         try {
             incomeObjects = new JSONArray(message);
         } catch (JSONException e) {
@@ -54,22 +54,26 @@ public class CentralPointListener {
                 try {
                     msg = objectMapper.readValue(obj.toString(),TransportMessage.class);
                     msg.setIndex(offset);
-                    try {
-                        Class clazz = Class.forName("com.ksem.oil.services." + msg.getType() );
-                        Object service = context.getBean(clazz);
-                        Method method = Arrays.stream(clazz.getMethods()).filter(p->p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
-                        Object result = method.invoke(service,msg);
-                    }catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-                        throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
-                    }
+                    execMessageProcessor(msg);
                     msg.setIndex(offset);
                 } catch (JsonProcessingException e) {
-                    errorCounter += ","+index;
+                    errorCounter = new StringBuilder(errorCounter).append(",").append(index).toString();
                 }
             }
         }
         if(!errorCounter.isEmpty())
             throw new InvalidMessage(errorCounter);
+    }
+
+    private void execMessageProcessor(TransportMessage msg) {
+        try {
+            Class<?> clazz = Class.forName("com.ksem.oil.services." + msg.getType() );
+            Object service = context.getBean(clazz);
+            Method method = Arrays.stream(clazz.getMethods()).filter(p->p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
+            method.invoke(service, msg);
+        }catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+            throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
+        }
     }
 
 }

@@ -29,6 +29,6 @@ public class Global2LocalService {
     }
 
     public boolean save(Global2LocalSalesType entity){
-        return globalLocalTypeRepository.save(entity) == null ? false : true;
+        return globalLocalTypeRepository.save(entity).getId() == null ? false : true;
     }
 }

@@ -1,7 +1,6 @@
 package com.ksem.oil.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksem.oil.domain.dto.CustomerDto;
 import com.ksem.oil.domain.dto.TransportMessage;
@@ -17,20 +16,20 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CustomerService implements MessageProcessor<Customer>{
+public class CustomerService implements MessageProcessor<Customer> {
 
     private final CustomerRepository customerRepository;
     private final AzsService azsService;
 
-    public Customer getCustomer(String name, Azs azs){
+    public Customer getCustomer(String name, Azs azs) {
         Customer result = null;
         Optional<Customer> optResult = customerRepository.findByNameAndAzs(name, azs);
-        if(optResult.isEmpty()){
+        if (optResult.isEmpty()) {
             result = new Customer();
             result.setAzs(azs);
             result.setName(name);
             result = customerRepository.save(result);
-        }else result = optResult.get();
+        } else result = optResult.get();
         return result;
     }
 
@@ -39,8 +38,8 @@ public class CustomerService implements MessageProcessor<Customer>{
         Customer entity = null;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            CustomerDto record = objectMapper.readValue(message.getPayload(),CustomerDto.class);
-            if(record.getGlobalId() == null) return null;
+            CustomerDto record = objectMapper.readValue(message.getPayload(), CustomerDto.class);
+            if (record.getGlobalId() == null) return null;
             entity = customerRepository.findByGlobalId(record.getGlobalId()).orElse(new Customer());
             entity.setName(record.getName());
             entity.setGlobalId(record.getGlobalId());
