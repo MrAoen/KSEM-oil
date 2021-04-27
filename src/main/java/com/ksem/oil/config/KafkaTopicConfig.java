@@ -25,6 +25,6 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic azs2CentralTopic() {
-        return new NewTopic("AZS-to-Central", 1, (short) 1);
+        return new NewTopic("AZS2Central", 1, (short) 1);
     }
 }

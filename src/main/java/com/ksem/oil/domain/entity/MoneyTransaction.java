@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity(name = "MoneyTransactions")
@@ -26,6 +27,9 @@ public class MoneyTransaction {
     @ManyToOne
     @JoinColumn(name = "azs")
     Azs azs;
+
+    @Column(name = "t_date")
+    LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "customer")

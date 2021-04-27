@@ -4,6 +4,7 @@ import com.ksem.oil.domain.entity.GasolineType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -11,6 +12,7 @@ import java.util.UUID;
 public class GasSalesDto {
     String azs; //основной склад - наименование (или ГУИД, или струткуру строкой)
     GasolineType gasolineType;
+    LocalDateTime date;
     int tank;
     int trk;
     Long sales_type;
@@ -19,5 +21,6 @@ public class GasSalesDto {
     Double count;
     Double price;
     Double sum;
-    UUID extId;
+    Long check_number;
+    UUID extId;//ГУИД на точке
 }

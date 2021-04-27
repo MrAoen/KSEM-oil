@@ -7,10 +7,10 @@ import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.exceptions.InvalidMessage;
 import com.ksem.oil.exceptions.InvalidMessageType;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -31,7 +31,7 @@ public class CentralPointListener {
     @Autowired
     ApplicationContext context;
 
-    @KafkaListener(topics = "AZS-to-Central")
+    @KafkaListener(topics = "AZS2Central")
     public void pollCentralMessages(@Payload String message,
         @Header(KafkaHeaders.OFFSET) Long offset
         ) {
@@ -39,7 +39,7 @@ public class CentralPointListener {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         objectMapper.setDateFormat(df);
         objectMapper.registerModule(new JavaTimeModule());
-        JSONArray incomeObjects = null;
+        JSONArray incomeObjects = new JSONArray();
         try {
             incomeObjects = new JSONArray(message);
         } catch (JSONException e) {
@@ -54,23 +54,26 @@ public class CentralPointListener {
                 try {
                     msg = objectMapper.readValue(obj.toString(),TransportMessage.class);
                     msg.setIndex(offset);
-                    try {
-                        Class clazz = Class.forName("com.ksem.oil.services." + msg.getType() );
-                        Object service = context.getBean(clazz);
-                        Method method = Arrays.stream(clazz.getMethods()).filter(p->p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
-                        Object result = method.invoke(service,msg);
-                        //TODO post process with resul object
-                    }catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-                        throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
-                    }
+                    execMessageProcessor(msg);
+                    msg.setIndex(offset);
                 } catch (JsonProcessingException e) {
-                    errorCounter += ","+index;
+                    errorCounter = new StringBuilder(errorCounter).append(",").append(index).toString();
                 }
-                msg.setIndex(offset);
             }
         }
         if(!errorCounter.isEmpty())
             throw new InvalidMessage(errorCounter);
+    }
+
+    private void execMessageProcessor(TransportMessage msg) {
+        try {
+            Class<?> clazz = Class.forName("com.ksem.oil.services." + msg.getType() );
+            Object service = context.getBean(clazz);
+            Method method = Arrays.stream(clazz.getMethods()).filter(p->p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
+            method.invoke(service, msg);
+        }catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+            throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
+        }
     }
 
 }

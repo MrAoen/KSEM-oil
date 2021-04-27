@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity(name = "GasSales")
@@ -27,6 +28,9 @@ public class GasSales {
     @ManyToOne
     @JoinColumn(name = "azs")
     Azs azs;
+
+    @Column(name = "t_date")
+    LocalDateTime date;
 
     @Column(name = "g_type")
     GasolineType gasolineType;
@@ -60,4 +64,7 @@ public class GasSales {
 
     @Column(name = "extid")
     UUID extId;
+
+    @Column(name = "check_number")
+    Long checkNumber;
 }

@@ -32,7 +32,7 @@ public class MessageSenderReciver {
     }
 
     @GetMapping("/{topicName}")
-    public String readMessageByRemotePoint(@PathVariable @NotNull String topicName) throws JSONException {
+    public String readMessageByRemotePoint(@PathVariable @NotNull String topicName) {
         return remotePointService.checkBox(topicName);
     }
 

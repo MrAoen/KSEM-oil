@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ControllerErrorAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidMessage.class)
-    public ResponseEntity<Object> InvalidMessageException(Exception ex, WebRequest request) throws JsonProcessingException {
+    public ResponseEntity<Object> invalidMessageException(Exception ex, WebRequest request) throws JsonProcessingException {
 
         ObjectMapper objMapper = new ObjectMapper();
         TransportMessage errMsg = new TransportMessage();
@@ -26,7 +26,7 @@ public class ControllerErrorAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidMessageType.class)
-    public ResponseEntity<Object> InvalidMessageTypeException(Exception ex, WebRequest request) throws JsonProcessingException {
+    public ResponseEntity<Object> invalidMessageTypeException(Exception ex, WebRequest request) throws JsonProcessingException {
 
         ObjectMapper objMapper = new ObjectMapper();
         TransportMessage errMsg = new TransportMessage();

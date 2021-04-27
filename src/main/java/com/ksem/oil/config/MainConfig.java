@@ -33,11 +33,8 @@ public class MainConfig {
         return modelMapper;
     }
 
-    @Autowired
-    TopicEntryEntityRepository topicEntryEntityRepository;
-
     @Bean
-    public TopicServer getTopicServer(){
-        return new DynamicServer(topicEntryEntityRepository, modelMapper());
+    public TopicServer getTopicServer(TopicEntryEntityRepository topicEntryEntityRepository){
+        return new DynamicServer(topicEntryEntityRepository);
     }
 }

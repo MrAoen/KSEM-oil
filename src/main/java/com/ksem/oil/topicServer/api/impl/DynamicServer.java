@@ -7,7 +7,6 @@ import com.ksem.oil.topicServer.Topics;
 import com.ksem.oil.topicServer.api.TopicServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.event.EventListener;
 
 import javax.annotation.PostConstruct;
@@ -21,11 +20,9 @@ public class DynamicServer implements TopicServer {
 
     private final Topics topics;
     private final TopicEntryEntityRepository topicEntityRepository;
-    private final ModelMapper modelMapper;
 
-    public DynamicServer(TopicEntryEntityRepository topicEntityRepository, ModelMapper modelMapper) {
+    public DynamicServer(TopicEntryEntityRepository topicEntityRepository) {
         this.topicEntityRepository = topicEntityRepository;
-        this.modelMapper = modelMapper;
         this.topics = new Topics();
     }
 
@@ -71,8 +68,10 @@ public class DynamicServer implements TopicServer {
 
     @Override
     public void increment(String topicName) {
-        TopicEntry topicEntry = topics.getTopicEntries().stream().filter(p -> Objects.equals(p.getName(), topicName)).findFirst().get();
-        topicEntry.setCount(topicEntry.getCount() + 1);
+        Optional<TopicEntry> topicEntry = topics.getTopicEntries().stream().filter(p -> Objects.equals(p.getName(), topicName)).findFirst();
+        if(topicEntry.isPresent()) {
+            topicEntry.get().setCount(topicEntry.get().getCount() + 1);
+        }
     }
 
     @PostConstruct

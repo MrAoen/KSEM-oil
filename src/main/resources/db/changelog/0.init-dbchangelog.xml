@@ -51,6 +51,7 @@
                 <constraints primaryKey="true" primaryKeyName="pk_sales" unique="true"/>
             </column>
             <column name="azs" type="bigint"/>
+            <column name="t_date" type="timestamp"/>
             <column name="g_type" type="int"/>
             <column name="tank" type="int"/>
             <column name="trk" type="int"/>
@@ -62,6 +63,7 @@
             <column name="price" type="numeric(12,4)"/>
             <column name="sum" type="numeric(12,2)"/>
             <column name="extid" type="uniqueidentifier"/>
+            <column name="check_number" type="bigint"/>
         </createTable>
         <addForeignKeyConstraint baseColumnNames="azs" baseTableName="gas_sales"
                                  constraintName="azs_sales_id_fk" deferrable="false"
@@ -80,6 +82,7 @@
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" primaryKeyName="pk_money_transactions" unique="true"/>
             </column>
+            <column name="t_date" type="timestamp"/>
             <column name="azs" type="bigint"/>
             <column name="customer" type="bigint"/>
             <column name="shift" type="int"/>
@@ -113,5 +116,26 @@
             </column>
             <column name="name" type="varchar(64)"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="5-global to local types" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="global_local_sales_types"/>
+            </not>
+        </preConditions>
+        <createTable tableName="global_local_sales_types">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_g2l" unique="true"/>
+            </column>
+            <column name="local_type" type="int"/>
+            <column name="global_type" type="int"/>
+            <column name="azs" type="bigint"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="azs" baseTableName="global_local_sales_types"
+                                 constraintName="global_local_sales_types_id_fk" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="azs" />
     </changeSet>
 </databaseChangeLog>
