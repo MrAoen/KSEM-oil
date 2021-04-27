@@ -8,11 +8,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -32,7 +30,7 @@ public class RemotePointService {
         this.topicServer = topicServer;
     }
 
-    public String checkBox(String topicName) throws JSONException {
+    public String checkBox(String topicName) {
         JSONArray result = new JSONArray();
         JSONObject timestamp = new JSONObject();
         timestamp.put("message-timstamp", LocalDateTime.now());
