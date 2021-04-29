@@ -8,18 +8,20 @@ import com.ksem.oil.domain.entity.Azs;
 import com.ksem.oil.domain.entity.Customer;
 import com.ksem.oil.domain.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class CustomerService implements MessageProcessor<Customer> {
 
     private final CustomerRepository customerRepository;
     private final AzsService azsService;
+    private final ObjectMapper objectMapper;
 
     public Customer getCustomer(String name, Azs azs) {
         Customer result = null;
@@ -36,7 +38,6 @@ public class CustomerService implements MessageProcessor<Customer> {
     @Override
     public Customer convertEntityFromMessage(TransportMessage message) {
         Customer entity = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             CustomerDto record = objectMapper.readValue(message.getPayload(), CustomerDto.class);
             if (record.getGlobalId() == null) return null;

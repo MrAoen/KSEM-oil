@@ -22,12 +22,12 @@ public class TopicController {
 
     private final TopicServer topicServer;
 
-    @PostMapping("/add/{topicName}")
+    @PostMapping("/{topicName}")
     public boolean addTopic(@PathVariable @NotNull String topicName) {
         return topicServer.addTopic(topicName);
     }
 
-    @DeleteMapping("/remove/{topicName}")
+    @DeleteMapping("/{topicName}")
     public boolean removeTopic(@PathVariable @NotNull String topicName) {
         return topicServer.removeTopic(topicName);
     }

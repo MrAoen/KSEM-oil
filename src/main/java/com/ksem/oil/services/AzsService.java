@@ -7,6 +7,7 @@ import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.domain.entity.Azs;
 import com.ksem.oil.domain.repository.AzsRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,11 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AzsService implements MessageProcessor<Azs> {
 
     private final AzsRepository azsRepository;
+    private final ObjectMapper objectMapper;
 
     public Optional<Azs> getAzs(String name) {
         return azsRepository.findByName(name);
@@ -32,7 +34,6 @@ public class AzsService implements MessageProcessor<Azs> {
     @Override
     public Azs convertEntityFromMessage(TransportMessage message) {
         Azs result = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             AzsDto dto = objectMapper.readValue(message.getPayload(), AzsDto.class);
             if (dto.getExtId() == null) {

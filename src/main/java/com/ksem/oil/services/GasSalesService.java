@@ -7,7 +7,7 @@ import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.domain.entity.Azs;
 import com.ksem.oil.domain.entity.GasSales;
 import com.ksem.oil.domain.repository.GasSalesRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +18,18 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GasSalesService implements MessageProcessor<GasSales> {
 
     private final GasSalesRepository gasSalesRepository;
     private final AzsService azsService;
     private final Global2LocalService global2LocalService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public GasSales convertEntityFromMessage(TransportMessage message) {
         GasSales entity = null;
-        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
             GasSalesDto record = objectMapper.readValue(message.getPayload(), GasSalesDto.class);
             if (record.getExtId() == null) return null;
@@ -51,7 +52,7 @@ public class GasSalesService implements MessageProcessor<GasSales> {
             }
             return gasSalesRepository.save(entity);
         } catch (JsonProcessingException e) {
-            log.error("Can't convert payload to GasSalesDto {} from {}", message.getIndex(),message.getSender());
+            log.error("Can't convert payload to GasSalesDto {} from {}", message.getIndex(), message.getSender());
         }
         return entity;
     }
