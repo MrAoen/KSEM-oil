@@ -29,6 +29,10 @@ public class GasSales {
     @JoinColumn(name = "azs")
     Azs azs;
 
+    @ManyToOne
+    @JoinColumn(name = "customer")
+    Customer customer;
+
     @Column(name = "t_date")
     LocalDateTime date;
 

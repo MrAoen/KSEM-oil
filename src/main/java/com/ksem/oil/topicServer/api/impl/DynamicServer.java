@@ -33,6 +33,7 @@ public class DynamicServer implements TopicServer {
             entry.setName(topicName);
             new NewTopic(topicName, 1, (short) 1);
             topics.getTopicEntries().add(entry);
+            updateEntites();
             return true;
         }
         log.warn("Topic already exist! %s", topicName);

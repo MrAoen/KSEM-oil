@@ -6,12 +6,12 @@ import com.ksem.oil.domain.dto.MoneyTransactionDto;
 import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.domain.entity.MoneyTransaction;
 import com.ksem.oil.domain.repository.MoneyTransactionRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class MoneyTransactionService implements MessageProcessor<MoneyTransaction> {
 
@@ -19,11 +19,11 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
     private final AzsService azsService;
     private final Global2LocalService global2LocalService;
     private final CustomerService customerService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public MoneyTransaction convertEntityFromMessage(TransportMessage message) {
         MoneyTransaction entity = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             MoneyTransactionDto record = objectMapper.readValue(message.getPayload(), MoneyTransactionDto.class);
             if (record.getExtId() == null) return null;

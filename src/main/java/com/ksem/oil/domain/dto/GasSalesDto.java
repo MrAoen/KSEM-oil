@@ -23,4 +23,5 @@ public class GasSalesDto {
     Double sum;
     Long check_number;
     UUID extId;//ГУИД на точке
+    String customer;
 }
