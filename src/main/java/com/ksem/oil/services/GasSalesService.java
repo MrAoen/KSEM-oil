@@ -25,6 +25,7 @@ public class GasSalesService implements MessageProcessor<GasSales> {
     private final AzsService azsService;
     private final Global2LocalService global2LocalService;
     private final ObjectMapper objectMapper;
+    private final CustomerService customerService;
 
     @Override
     public GasSales convertEntityFromMessage(TransportMessage message) {
@@ -48,6 +49,7 @@ public class GasSalesService implements MessageProcessor<GasSales> {
             entity.setTrk(record.getTrk());
             entity.setDate(record.getDate());
             if (entity.getAzs() != null) {
+                entity.setCustomer(customerService.getCustomer(record.getCustomer(), entity.getAzs()));
                 entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), record.getSales_type()));
             }
             return gasSalesRepository.save(entity);

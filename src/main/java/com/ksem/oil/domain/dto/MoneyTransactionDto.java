@@ -15,7 +15,7 @@ public class MoneyTransactionDto {
     Long shift;
     Long sales_type;
     Long globalSalesType;
-    Long costItem;
+    UUID costItem;
     Double sum;
     UUID extId;
 }

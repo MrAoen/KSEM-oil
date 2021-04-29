@@ -45,7 +45,7 @@ public class MoneyTransaction {
     Long globalSalesType;
 
     @Column(name = "cost_item")
-    Long costItem;
+    UUID costItem;
 
     @Column(name = "sum")
     Double sum;
