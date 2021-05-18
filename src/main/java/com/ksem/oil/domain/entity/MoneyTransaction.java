@@ -53,4 +53,7 @@ public class MoneyTransaction {
     @Column(name = "extid")
     UUID extId;
 
+    @Column(name = "worker")
+    UUID worker;
+
 }

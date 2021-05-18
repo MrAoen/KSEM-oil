@@ -15,5 +15,14 @@
             <column name="customer" type="bigint"/>
         </addColumn>
     </changeSet>
-
+<changeSet id="7-money_transactions new column worker" author="Dmytro Lytviak">
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <columnExists tableName="money_transactions" columnName="worker"/>
+        </not>
+    </preConditions>
+    <addColumn tableName="money_transactions">
+        <column name="worker" type="uniqueidentifier"/>
+    </addColumn>
+</changeSet>
 </databaseChangeLog>

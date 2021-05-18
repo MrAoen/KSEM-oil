@@ -18,4 +18,5 @@ public class MoneyTransactionDto {
     UUID costItem;
     Double sum;
     UUID extId;
+    UUID worker;
 }

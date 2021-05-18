@@ -35,6 +35,7 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
             entity.setShift(record.getShift());
             entity.setSales_type(record.getSales_type());
             entity.setCostItem(record.getCostItem());
+            entity.setWorker(record.getWorker());
             if (entity.getAzs() != null) {
                 entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), record.getSales_type()));
                 entity.setCustomer(customerService.getCustomer(record.getCustomer(), entity.getAzs()));

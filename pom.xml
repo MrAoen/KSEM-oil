@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.ksem</groupId>
     <artifactId>oil</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>oil</name>
     <description>Transport and Client support system for KSEM</description>
 
@@ -190,6 +190,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.4.5</version>
                 <configuration>
                     <layers>
                         <enabled>true</enabled>
