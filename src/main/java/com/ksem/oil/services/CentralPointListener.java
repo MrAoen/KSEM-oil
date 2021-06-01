@@ -51,9 +51,11 @@ public class CentralPointListener {
                 TransportMessage msg = null;
                 try {
                     msg = objectMapper.readValue(obj.toString(), TransportMessage.class);
-                    msg.setIndex(offset);
-                    execMessageProcessor(msg);
-                    msg.setIndex(offset);
+                    if(msg != null) {
+                        msg.setIndex(offset);
+                        execMessageProcessor(msg);
+                        msg.setIndex(offset);
+                    }
                 } catch (JsonProcessingException e) {
                     errorCounter = new StringBuilder(errorCounter).append(",").append(index).toString();
                 }
@@ -70,7 +72,7 @@ public class CentralPointListener {
             Method method = Arrays.stream(clazz.getMethods()).filter(p -> p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
             method.invoke(service, msg);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
+            throw new InvalidMessageType("com.ksem.oil.services." + msg.getType() + ".class with message:"+e.getMessage());
         }
     }
 

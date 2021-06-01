@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.ksem</groupId>
     <artifactId>oil</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.5</version>
     <name>oil</name>
     <description>Transport and Client support system for KSEM</description>
 
