@@ -1,0 +1,39 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="8-message table" author="Dmytro Lytviak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="message"/>
+            </not>
+        </preConditions>
+        <createTable tableName="message">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_message" unique="true"/>
+            </column>
+            <column name="name" type="varchar(64)"/>
+            <column name="azs" type="bigint"/>
+            <column name="code" type="varchar(8)"/>
+            <column name="value" type="varchar(256)"/>
+            <column name="t_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="9-message index" author="Dmytro Litvyak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="message" indexName="message_azs"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="message" indexName="message_azs_date">
+            <column name="azs"/>
+            <column name="t_date"/>
+        </createIndex>
+        <createIndex tableName="message" indexName="message_date_azs">
+            <column name="t_date"/>
+            <column name="azs"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
