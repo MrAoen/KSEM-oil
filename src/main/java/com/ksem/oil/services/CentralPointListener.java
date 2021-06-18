@@ -8,7 +8,6 @@ import com.ksem.oil.exceptions.InvalidMessageType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,7 +17,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 
@@ -37,21 +35,21 @@ public class CentralPointListener {
                                     @Header(KafkaHeaders.OFFSET) Long offset
     ) {
 
-        JSONArray incomeObjects = new JSONArray();
+        var incomeObjects = new JSONArray();
         try {
             incomeObjects = new JSONArray(message);
         } catch (JSONException e) {
             log.error("Income structure in not JSONArray");
         }
-        String errorCounter = "";
-        for (int index = 0; index < incomeObjects.length(); index++) {
+        var errorCounter = "";
+        for (var index = 0; index < incomeObjects.length(); index++) {
             //мусор выкидываем молча
-            JSONObject obj = incomeObjects.optJSONObject(index);
+            var obj = incomeObjects.optJSONObject(index);
             if (obj != null) {
                 TransportMessage msg = null;
                 try {
                     msg = objectMapper.readValue(obj.toString(), TransportMessage.class);
-                    if(msg != null) {
+                    if (msg != null) {
                         msg.setIndex(offset);
                         execMessageProcessor(msg);
                         msg.setIndex(offset);
@@ -66,13 +64,25 @@ public class CentralPointListener {
     }
 
     private void execMessageProcessor(TransportMessage msg) {
+        var packageName = "com.ksem.oil.services.";
         try {
-            Class<?> clazz = Class.forName("com.ksem.oil.services." + msg.getType());
+            if (msg == null || msg.toString().isEmpty()) {
+                log.warn("empty message appear.");
+                return;
+            }
+            Class<?> clazz = Class.forName(packageName + msg.getType());
             Object service = context.getBean(clazz);
-            Method method = Arrays.stream(clazz.getMethods()).filter(p -> p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
+            var method = Arrays.stream(clazz.getMethods()).filter(p -> p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
             method.invoke(service, msg);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new InvalidMessageType("com.ksem.oil.services." + msg.getType() + ".class with message:"+e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new InvalidMessageType(packageName + msg.getType() + ".class not found! with message:" + e.getMessage());
+        } catch (NoSuchMethodException e) {
+            throw new InvalidMessageType(packageName + msg.getType() + ".class method convertEntityFromMessage not found! with message:" + e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new InvalidMessageType(packageName + msg.getType() + ".class illegal access to method with message:" + e.getMessage());
+        } catch (InvocationTargetException e) {
+            log.warn("Message with trowble:", msg);
+            throw new InvalidMessageType(packageName + msg.getType() + "original message:" + msg.toString() + ".class invoc exception with message:" + e.getMessage());
         }
     }
 

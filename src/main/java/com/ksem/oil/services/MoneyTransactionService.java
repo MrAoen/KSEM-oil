@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -25,25 +28,30 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
     public MoneyTransaction convertEntityFromMessage(TransportMessage message) {
         MoneyTransaction entity = null;
         try {
-            MoneyTransactionDto record = objectMapper.readValue(message.getPayload(), MoneyTransactionDto.class);
-            if (record.getExtId() == null) return null;
-            entity = moneyTransactionRepository.findByExtId(record.getExtId()).orElse(new MoneyTransaction());
-            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(record.getAzs()).orElse(null));
-            entity.setDate(record.getDate());
-            entity.setExtId(record.getExtId());
-            entity.setSum(record.getSum());
-            entity.setShift(record.getShift());
-            entity.setSales_type(record.getSales_type());
-            entity.setCostItem(record.getCostItem());
-            entity.setWorker(record.getWorker());
+            MoneyTransactionDto recordDto = objectMapper.readValue(message.getPayload(), MoneyTransactionDto.class);
+            if (recordDto.getExtId() == null) return null;
+            entity = moneyTransactionRepository.findByExtId(recordDto.getExtId()).orElse(new MoneyTransaction());
+            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(recordDto.getAzs()).orElse(null));
+            entity.setDate(recordDto.getDate());
+            entity.setExtId(recordDto.getExtId());
+            entity.setSum(recordDto.getSum());
+            entity.setShift(recordDto.getShift());
+            entity.setSales_type(recordDto.getSales_type());
+            entity.setCostItem(recordDto.getCostItem());
+            entity.setWorker(recordDto.getWorker());
             if (entity.getAzs() != null) {
-                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), record.getSales_type()));
-                entity.setCustomer(customerService.getCustomer(record.getCustomer(), entity.getAzs()));
+                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), recordDto.getSales_type()));
+                entity.setCustomer(customerService.getCustomer(recordDto.getCustomer(), entity.getAzs()));
             }
-            return moneyTransactionRepository.save(entity);
+            entity = moneyTransactionRepository.save(entity);
         } catch (JsonProcessingException e) {
             log.error("Can't convert payload to MoneyTransactionDto {} from {}", message.getIndex(), message.getSender());
         }
         return entity;
+    }
+
+    @Transactional
+    public Integer delete(UUID extId) {
+        return moneyTransactionRepository.deleteByExtId(extId);
     }
 }

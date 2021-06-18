@@ -7,7 +7,6 @@ import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.domain.entity.Azs;
 import com.ksem.oil.domain.entity.Customer;
 import com.ksem.oil.domain.repository.CustomerRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,12 +38,14 @@ public class CustomerService implements MessageProcessor<Customer> {
     public Customer convertEntityFromMessage(TransportMessage message) {
         Customer entity = null;
         try {
-            CustomerDto record = objectMapper.readValue(message.getPayload(), CustomerDto.class);
-            if (record.getGlobalId() == null) return null;
-            entity = customerRepository.findByGlobalId(record.getGlobalId()).orElse(new Customer());
-            entity.setName(record.getName());
-            entity.setGlobalId(record.getGlobalId());
-            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(record.getAzs()).orElse(null));
+            CustomerDto recordDto = objectMapper.readValue(message.getPayload(), CustomerDto.class);
+            if (recordDto.getGlobalId() == null) return null;
+            if (recordDto.getAzs().isEmpty()) return null;
+            var azs = azsService.getAzs(recordDto.getAzs()).orElse(null);
+            entity = customerRepository.findByGlobalIdAndAzs(recordDto.getGlobalId(), azs).orElse(new Customer());
+            entity.setName(recordDto.getName());
+            entity.setGlobalId(recordDto.getGlobalId());
+            entity.setAzs(azs);
             entity = customerRepository.save(entity);
         } catch (JsonProcessingException e) {
             log.error("Can't convert payload to CustomerDto {} from {}", message.getIndex(), message.getSender());

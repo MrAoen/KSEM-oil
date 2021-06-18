@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.4</version>
+        <version>2.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ksem</groupId>
     <artifactId>oil</artifactId>
-    <version>0.0.6</version>
+    <version>0.1.2</version>
     <name>oil</name>
     <description>Transport and Client support system for KSEM</description>
 
@@ -56,6 +56,11 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.19</version>
@@ -64,6 +69,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -74,6 +85,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
@@ -225,6 +242,15 @@
                     <value>prod</value>
                 </property>
                 <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>test</value>
+                </property>
             </activation>
         </profile>
     </profiles>

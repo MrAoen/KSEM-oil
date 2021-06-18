@@ -11,10 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -32,25 +34,25 @@ public class GasSalesService implements MessageProcessor<GasSales> {
         GasSales entity = null;
 
         try {
-            GasSalesDto record = objectMapper.readValue(message.getPayload(), GasSalesDto.class);
-            if (record.getExtId() == null) return null;
-            entity = gasSalesRepository.findByExtId(record.getExtId()).orElse(new GasSales());
-            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(record.getAzs()).orElse(null));
-            entity.setCount(record.getCount());
-            entity.setCheckNumber(record.getCheck_number());
-            entity.setExtId(record.getExtId());
-            entity.setGasolineType(record.getGasolineType());
-            entity.setLiter(record.getLiter());
-            entity.setPrice(record.getPrice());
-            entity.setSales_type(record.getSales_type());
-            entity.setShift(record.getShift());
-            entity.setSum(record.getSum());
-            entity.setTank(record.getTank());
-            entity.setTrk(record.getTrk());
-            entity.setDate(record.getDate());
+            GasSalesDto salesDto = objectMapper.readValue(message.getPayload(), GasSalesDto.class);
+            if (salesDto.getExtId() == null) return null;
+            entity = gasSalesRepository.findByExtId(salesDto.getExtId()).orElse(new GasSales());
+            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(salesDto.getAzs()).orElse(null));
+            entity.setCount(salesDto.getCount());
+            entity.setCheckNumber(salesDto.getCheck_number());
+            entity.setExtId(salesDto.getExtId());
+            entity.setGasolineType(salesDto.getGasolineType());
+            entity.setLiter(salesDto.getLiter());
+            entity.setPrice(salesDto.getPrice());
+            entity.setSales_type(salesDto.getSales_type());
+            entity.setShift(salesDto.getShift());
+            entity.setSum(salesDto.getSum());
+            entity.setTank(salesDto.getTank());
+            entity.setTrk(salesDto.getTrk());
+            entity.setDate(salesDto.getDate());
             if (entity.getAzs() != null) {
-                entity.setCustomer(customerService.getCustomer(record.getCustomer(), entity.getAzs()));
-                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), record.getSales_type()));
+                entity.setCustomer(customerService.getCustomer(salesDto.getCustomer(), entity.getAzs()));
+                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), salesDto.getSales_type()));
             }
             return gasSalesRepository.save(entity);
         } catch (JsonProcessingException e) {
@@ -65,5 +67,10 @@ public class GasSalesService implements MessageProcessor<GasSales> {
                 , date.with(ChronoField.NANO_OF_DAY, 0)
                 , date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay())
         );
+    }
+
+    @Transactional
+    public Integer delete(UUID extId){
+        return gasSalesRepository.deleteByExtId(extId);
     }
 }

@@ -15,4 +15,5 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
 
     Optional<Customer> findByNameAndAzs(String name, Azs azs);
 
+    Optional<Customer> findByGlobalIdAndAzs(UUID id, Azs azs);
 }
