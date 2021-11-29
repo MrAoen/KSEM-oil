@@ -36,23 +36,33 @@ public class GasSalesService implements MessageProcessor<GasSales> {
         try {
             GasSalesDto salesDto = objectMapper.readValue(message.getPayload(), GasSalesDto.class);
             if (salesDto.getExtId() == null) return null;
-            entity = gasSalesRepository.findByExtId(salesDto.getExtId()).orElse(new GasSales());
+            List<GasSales> existingRows = gasSalesRepository.findAllByExtId(salesDto.getExtId());
+            existingRows.forEach(r -> {
+                if (r.getRowNumber() > salesDto.getRowCount()) {
+                    gasSalesRepository.delete(r);
+                }
+            });
+            entity = gasSalesRepository.findByExtIdAndRowNumber(salesDto.getExtId(), salesDto.getRowNumber())
+                    .orElse(new GasSales());
             if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(salesDto.getAzs()).orElse(null));
             entity.setCount(salesDto.getCount());
-            entity.setCheckNumber(salesDto.getCheck_number());
+            entity.setCheckNumber(salesDto.getCheckNumber());
             entity.setExtId(salesDto.getExtId());
             entity.setGasolineType(salesDto.getGasolineType());
             entity.setLiter(salesDto.getLiter());
             entity.setPrice(salesDto.getPrice());
-            entity.setSales_type(salesDto.getSales_type());
+            entity.setSales_type(salesDto.getSalesType());
             entity.setShift(salesDto.getShift());
             entity.setSum(salesDto.getSum());
             entity.setTank(salesDto.getTank());
             entity.setTrk(salesDto.getTrk());
             entity.setDate(salesDto.getDate());
+            entity.setManager(salesDto.getManager());
+            entity.setComment(salesDto.getComment());
+            entity.setRowNumber(salesDto.getRowNumber());
             if (entity.getAzs() != null) {
                 entity.setCustomer(customerService.getCustomer(salesDto.getCustomer(), entity.getAzs()));
-                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), salesDto.getSales_type()));
+                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), salesDto.getSalesType()));
             }
             return gasSalesRepository.save(entity);
         } catch (JsonProcessingException e) {
@@ -70,7 +80,7 @@ public class GasSalesService implements MessageProcessor<GasSales> {
     }
 
     @Transactional
-    public Integer delete(UUID extId){
+    public Integer delete(UUID extId) {
         return gasSalesRepository.deleteByExtId(extId);
     }
 }

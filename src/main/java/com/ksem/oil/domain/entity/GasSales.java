@@ -71,4 +71,13 @@ public class GasSales {
 
     @Column(name = "check_number")
     Long checkNumber;
+
+    @Column(name = "manager")
+    String manager;
+
+    @Column(name = "comment")
+    String comment;
+
+    @Column(name = "row_number")
+    int rowNumber;
 }

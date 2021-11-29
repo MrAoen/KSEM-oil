@@ -36,7 +36,7 @@ public class DynamicServer implements TopicServer {
             updateEntites();
             return true;
         }
-        log.warn("Topic already exist! %s", topicName);
+        log.warn("Topic already exist! {}", topicName);
         return false;
     }
 
@@ -47,8 +47,7 @@ public class DynamicServer implements TopicServer {
             if (Objects.equals(entry.getName(), topicName)) {
                 topics.getTopicEntries().remove(entry);
                 Optional<TopicEntryEntity> opt = topicEntityRepository.findByName(entry.getName());
-                if (opt.isPresent())
-                    topicEntityRepository.delete(opt.get());
+                opt.ifPresent(topicEntityRepository::delete);
                 log.info("Topic {} was removed", topicName);
                 return true;
             }
@@ -70,15 +69,13 @@ public class DynamicServer implements TopicServer {
     @Override
     public void increment(String topicName) {
         Optional<TopicEntry> topicEntry = topics.getTopicEntries().stream().filter(p -> Objects.equals(p.getName(), topicName)).findFirst();
-        if(topicEntry.isPresent()) {
-            topicEntry.get().setCount(topicEntry.get().getCount() + 1);
-        }
+        topicEntry.ifPresent(entry -> entry.setCount(entry.getCount() + 1));
     }
 
     @PostConstruct
     private void initalizeEntities() {
         List<TopicEntryEntity> actualTopics = topicEntityRepository.findAll();
-        actualTopics.stream().forEach(record -> this.addTopic(record.getName()));
+        actualTopics.forEach(topicEntry -> this.addTopic(topicEntry.getName()));
     }
 
     @PreDestroy

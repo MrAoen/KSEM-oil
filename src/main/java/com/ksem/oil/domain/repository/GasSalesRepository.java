@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +17,8 @@ import java.util.UUID;
 public interface GasSalesRepository extends JpaRepository<GasSales, Long> {
 
     Optional<GasSales> findByExtId(UUID extId);
+
+    Optional<GasSales> findByExtIdAndRowNumber(UUID extId, int rowNumber);
 
     Optional<GasSales> findByCheckNumberAndAzs(Long checkNumber, Azs azs);
 
@@ -28,4 +29,5 @@ public interface GasSalesRepository extends JpaRepository<GasSales, Long> {
     Integer deleteByExtId(@Param("id") UUID extId);
 
     List<GasSales> findAllByExtId(UUID extId);
+
 }
