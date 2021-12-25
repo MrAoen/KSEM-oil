@@ -56,4 +56,6 @@ public class MoneyTransaction {
     @Column(name = "worker")
     UUID worker;
 
+    @Column(name = "row_number")
+    int rowNumber;
 }

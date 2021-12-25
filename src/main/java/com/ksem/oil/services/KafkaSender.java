@@ -30,7 +30,7 @@ public class KafkaSender {
                         result.getRecordMetadata().timestamp(),
                         topicName,
                         result.getRecordMetadata().offset(),
-                        message.substring(0, 32));
+                        message.substring(message.length()-1<32 ? 0 : 32, Math.min(71,message.length()-1)));
             }
 
             @Override
@@ -38,7 +38,7 @@ public class KafkaSender {
                 log.error("err on {} for topic=[{}] message strts with={}",
                         LocalDateTime.now(),
                         topicName,
-                        message.substring(0, 32));
+                        message);
             }
         });
     }

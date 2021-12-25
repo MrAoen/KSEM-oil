@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,7 +31,15 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
         try {
             MoneyTransactionDto recordDto = objectMapper.readValue(message.getPayload(), MoneyTransactionDto.class);
             if (recordDto.getExtId() == null) return null;
-            entity = moneyTransactionRepository.findByExtId(recordDto.getExtId()).orElse(new MoneyTransaction());
+
+            List<MoneyTransaction> existingRows = moneyTransactionRepository.findAllByExtId(recordDto.getExtId());
+            existingRows.forEach(r -> {
+                if (r.getRowNumber() > recordDto.getRowCount()) {
+                    moneyTransactionRepository.delete(r);
+                }
+            });
+
+            entity = moneyTransactionRepository.findByExtIdAndRowNumber(recordDto.getExtId(),recordDto.getRowNumber()).orElse(new MoneyTransaction());
             if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(recordDto.getAzs()).orElse(null));
             entity.setDate(recordDto.getDate());
             entity.setExtId(recordDto.getExtId());
@@ -39,6 +48,7 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
             entity.setSales_type(recordDto.getSales_type());
             entity.setCostItem(recordDto.getCostItem());
             entity.setWorker(recordDto.getWorker());
+            entity.setRowNumber(recordDto.getRowNumber());
             if (entity.getAzs() != null) {
                 entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), recordDto.getSales_type()));
                 entity.setCustomer(customerService.getCustomer(recordDto.getCustomer(), entity.getAzs()));

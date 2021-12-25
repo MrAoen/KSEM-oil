@@ -6,8 +6,9 @@ import com.ksem.oil.topicServer.TopicEntry;
 import com.ksem.oil.topicServer.Topics;
 import com.ksem.oil.topicServer.api.TopicServer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.context.event.EventListener;
+import org.springframework.kafka.config.TopicBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,7 +32,12 @@ public class DynamicServer implements TopicServer {
         if (topics.getTopicEntries().stream().noneMatch(p -> Objects.equals(p.getName(), topicName))) {
             TopicEntry entry = new TopicEntry();
             entry.setName(topicName);
-            new NewTopic(topicName, 1, (short) 1);
+            //new NewTopic(topicName, 1, (short) 1);
+            TopicBuilder.name(topicName)
+                    .partitions(1)
+                    .replicas(1)
+                    .config(TopicConfig.RETENTION_MS_CONFIG, "86400000")
+                    .build();
             topics.getTopicEntries().add(entry);
             updateEntites();
             return true;

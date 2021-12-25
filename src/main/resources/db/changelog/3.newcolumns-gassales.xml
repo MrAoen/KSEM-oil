@@ -26,6 +26,19 @@
         <addColumn tableName="gas_sales">
             <column name="row_number" type="int" defaultValue="1"/>
         </addColumn>
-        <addNotNullConstraint tableName="gas_sales" columnName="row_number"/>
+        <addNotNullConstraint tableName="gas_sales" columnName="row_number" columnDataType="int" defaultNullValue="1"/>
+    </changeSet>
+
+    <changeSet id="13-money_transactions table new column" author="Dmytro Lytviak">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="money_transactions" columnName="row_number"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="money_transactions">
+            <column name="row_number" type="int" defaultValue="1"/>
+        </addColumn>
+        <addNotNullConstraint tableName="money_transactions" columnName="row_number" columnDataType="int" defaultNullValue="1"/>
     </changeSet>
 </databaseChangeLog>

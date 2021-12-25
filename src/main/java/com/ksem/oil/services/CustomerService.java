@@ -23,7 +23,7 @@ public class CustomerService implements MessageProcessor<Customer> {
     private final ObjectMapper objectMapper;
 
     public Customer getCustomer(String name, Azs azs) {
-        Customer result = null;
+        Customer result;
         Optional<Customer> optResult = customerRepository.findByNameAndAzs(name, azs);
         if (optResult.isEmpty()) {
             result = new Customer();
@@ -39,10 +39,15 @@ public class CustomerService implements MessageProcessor<Customer> {
         Customer entity = null;
         try {
             CustomerDto recordDto = objectMapper.readValue(message.getPayload(), CustomerDto.class);
+            if(recordDto.getName().isEmpty()) return null;
             if (recordDto.getGlobalId() == null) return null;
             if (recordDto.getAzs().isEmpty()) return null;
             var azs = azsService.getAzs(recordDto.getAzs()).orElse(null);
-            entity = customerRepository.findByGlobalIdAndAzs(recordDto.getGlobalId(), azs).orElse(new Customer());
+            if(recordDto.getGlobalId() != null) {
+                entity = customerRepository.findByGlobalIdAndAzs(recordDto.getGlobalId(), azs).orElse(new Customer());
+            }else{
+                entity = customerRepository.findByNameAndAzs(recordDto.getName(), azs).orElse(new Customer());
+            }
             entity.setName(recordDto.getName());
             entity.setGlobalId(recordDto.getGlobalId());
             entity.setAzs(azs);

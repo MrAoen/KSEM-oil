@@ -21,16 +21,23 @@
             <column name="t_date" type="timestamp"/>
         </createTable>
     </changeSet>
-    <changeSet id="9-message index" author="Dmytro Litvyak">
+    <changeSet id="9.1-message index" author="Dmytro Litvyak">
         <preConditions onFail="MARK_RAN">
             <not>
-                <indexExists tableName="message" indexName="message_azs"/>
+                <indexExists tableName="message" indexName="message_azs_date"/>
             </not>
         </preConditions>
         <createIndex tableName="message" indexName="message_azs_date">
             <column name="azs"/>
             <column name="t_date"/>
         </createIndex>
+    </changeSet>
+    <changeSet id="9.2-message index" author="Dmytro Litvyak">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="message" indexName="message_date_azs"/>
+            </not>
+        </preConditions>
         <createIndex tableName="message" indexName="message_date_azs">
             <column name="t_date"/>
             <column name="azs"/>

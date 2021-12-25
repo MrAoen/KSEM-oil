@@ -1,5 +1,6 @@
 package com.ksem.oil.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +20,8 @@ public class MoneyTransactionDto {
     Double sum;
     UUID extId;
     UUID worker;
+    @JsonProperty("row_number")
+    int rowNumber;
+    @JsonProperty("row_count")
+    int rowCount;
 }
