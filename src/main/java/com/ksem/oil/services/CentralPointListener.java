@@ -55,7 +55,7 @@ public class CentralPointListener {
                         msg.setIndex(offset);
                     }
                 } catch (JsonProcessingException e) {
-                    errorCounter = new StringBuilder(errorCounter).append(",").append(index).toString();
+                    errorCounter = errorCounter + "," + index;
                 }
             }
         }
@@ -82,7 +82,7 @@ public class CentralPointListener {
             throw new InvalidMessageType(packageName + msg.getType() + ".class illegal access to method with message:" + e.getMessage());
         } catch (InvocationTargetException e) {
             log.warn("Message with trowble:", msg);
-            throw new InvalidMessageType(packageName + msg.getType() + "original message:" + msg.toString() + ".class invoc exception with message:" + e.getMessage());
+            throw new InvalidMessageType(packageName + msg.getType() + " original message:" + msg.toString() + ".class invoc exception with message:" + e.getMessage());
         }
     }
 

@@ -3,7 +3,6 @@ package com.ksem.oil.controllers;
 import com.ksem.oil.services.KafkaSender;
 import com.ksem.oil.services.RemotePointService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;

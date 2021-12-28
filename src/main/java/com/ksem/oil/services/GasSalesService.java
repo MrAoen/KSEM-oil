@@ -53,7 +53,11 @@ public class GasSalesService implements MessageProcessor<GasSales> {
             entity.setPrice(salesDto.getPrice());
             entity.setSales_type(salesDto.getSalesType());
             entity.setShift(salesDto.getShift());
-            entity.setSum(salesDto.getSum());
+            if(salesDto.getSum() == null){
+                entity.setSum(0.0);
+            }else {
+                entity.setSum(salesDto.getSum());
+            }
             entity.setTank(salesDto.getTank());
             entity.setTrk(salesDto.getTrk());
             entity.setDate(salesDto.getDate());

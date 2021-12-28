@@ -43,7 +43,11 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
             if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(recordDto.getAzs()).orElse(null));
             entity.setDate(recordDto.getDate());
             entity.setExtId(recordDto.getExtId());
-            entity.setSum(recordDto.getSum());
+            if(recordDto.getSum() == null){
+                entity.setSum(0.0);
+            }else {
+                entity.setSum(recordDto.getSum());
+            }
             entity.setShift(recordDto.getShift());
             entity.setSales_type(recordDto.getSales_type());
             entity.setCostItem(recordDto.getCostItem());
