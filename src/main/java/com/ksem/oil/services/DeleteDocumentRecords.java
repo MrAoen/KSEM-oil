@@ -16,6 +16,7 @@ public class DeleteDocumentRecords implements MessageProcessor<RecordOwner> {
     private final GasSalesService gasSalesService;
     private final MoneyTransactionService moneyTransactionService;
     private final ObjectMapper objectMapper;
+    //TODO add deletetion for cupones (or no)
 
     @Override
     public RecordOwner convertEntityFromMessage(TransportMessage message) {
