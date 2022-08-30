@@ -52,7 +52,7 @@ public class CustomerService implements MessageProcessor<Customer> {
         try {
             CustomerDto recordDto = objectMapper.readValue(message.getPayload(), CustomerDto.class);
             if(recordDto.getName().isEmpty()) return null;
-            //if (recordDto.getGlobalId() == null) return null;
+            if (recordDto.getGlobalId() == null) return null;
             if (recordDto.getAzs().isEmpty()) return null;
             var azs = azsService.getAzs(recordDto.getAzs()).orElse(null);
             if(recordDto.getGlobalId() != null) {

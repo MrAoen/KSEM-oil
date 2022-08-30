@@ -41,24 +41,12 @@ Content-Type: application/json
 [
   {
     "message": "авто регистрация",
-    "sender": "test",
-    "type": "GasSalesService",
+    "sender": "test-topic",
+    "type": "CustomerService",
     "payload": {
-      "azs": "+Константы.ОсновнойСклад.Получить()",
-      "gasolineType": "1",
-      "date": "2021-11-25T12:59:01",
-      "tank": "0",
-      "trk": "1",
-      "shift": "706",
-      "sales_type": "0",
-      "liter": "12",
-      "count": "12",
-      "price": "11",
-      "sum": "127.00",
-      "customer": "b721236a-5c7f-409d-839c-cd095665f3d8",
-      "check_number": "100566",
-      "extId": "9e395173-b745-4581-a593-96ea1780ab53",
-      "manager": "Васян"
+      "name": "ЮРА МАЗ",
+      "azs": "F001",
+      "globalId": "5600c235-0050-9b30-f506-658c3dd611eb"
     }
   }
 ]
@@ -123,8 +111,18 @@ Content-Type: application/json
 PUT http://localhost:8080/message/AZS2Central
 Content-Type: application/json
 
-[{"message":"авто регистрация","sender":"horol","type":"GasSalesService","payload":{"azs":"Хорол","gasolineType":"2","date":"2021-11-25T11:41:57","tank":"000000002","trk":"134","sales_type":"000900001","shift":"89","liter":"197.54","count":"197.54","price":"0.0","sum":"","customer":"Чех","check_number":"418923","manager":"","comment":" ВІ9916АІ Чех А. І.","row_number":"1","row_count":"1","extId":"fc48fa70-4dcd-11ec-af64-50465dcf48da"}}]
-
+[
+  {
+    "message": "авто регистрация",
+    "sender": "test-topic",
+    "type": "CustomerService",
+    "payload": {
+      "name": "ЮРА МАЗ",
+      "azs": "F001",
+      "globalId": "5600c235-0050-9b30-f506-658c3dd611eb"
+    }
+  }
+]
 
 ###
 PUT http://localhost:8080/message/AZS2Central
@@ -157,29 +155,6 @@ Content-Type: application/json
 PUT http://localhost:8080/message/AZS2Central
 Content-Type: application/json
 
-[{
-  "type": "GasSalesService",
-  "message": "авто регистрация",
-  "payload": {
-    "gasolineType": "2",
-    "date": "2021-12-15T06:23:46",
-    "sales_type": "000000002",
-    "manager": "",
-    "shift": "445",
-    "liter": "65.5",
-    "count": "65.5",
-    "sum": "1699.73",
-    "trk": "103",
-    "row_count": "1",
-    "check_number": "386909",
-    "price": "25.95",
-    "comment": "  ",
-    "azs": "Гоща",
-    "row_number": "1",
-    "extId": "b6016e2f-5dad-11ec-be7b-0023245c8031",
-    "tank": "000000002",
-    "customer": ""
-  }
-}]
+[{"message":"авто регистрация","sender":"А5","type":"GasSalesService","payload":{"azs":"А5","gasolineType":"2","date":"2022-01-01T06:44:43","tank":"000000004","trk":"18","sales_type":"000000002","shift":"344","liter":"42","count":"42","sum":"1102.5","customer":"","check_number":"280328","price":"26.25","manager":"","comment":"  ","row_number":"1","row_count":"1","extId":"f134e795-6ad7-11ec-909f-96a257875983"}}]
 
 ###
