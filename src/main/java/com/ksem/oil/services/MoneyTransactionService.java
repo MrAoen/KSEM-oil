@@ -6,12 +6,16 @@ import com.ksem.oil.domain.dto.MoneyTransactionDto;
 import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.domain.entity.MoneyTransaction;
 import com.ksem.oil.domain.repository.MoneyTransactionRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.UUID;
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class MoneyTransactionService implements MessageProcessor<MoneyTransaction> {
 
@@ -19,29 +23,49 @@ public class MoneyTransactionService implements MessageProcessor<MoneyTransactio
     private final AzsService azsService;
     private final Global2LocalService global2LocalService;
     private final CustomerService customerService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public MoneyTransaction convertEntityFromMessage(TransportMessage message) {
         MoneyTransaction entity = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            MoneyTransactionDto record = objectMapper.readValue(message.getPayload(), MoneyTransactionDto.class);
-            if (record.getExtId() == null) return null;
-            entity = moneyTransactionRepository.findByExtId(record.getExtId()).orElse(new MoneyTransaction());
-            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(record.getAzs()).orElse(null));
-            entity.setDate(record.getDate());
-            entity.setExtId(record.getExtId());
-            entity.setSum(record.getSum());
-            entity.setShift(record.getShift());
-            entity.setSales_type(record.getSales_type());
-            entity.setCostItem(record.getCostItem());
-            if (entity.getAzs() != null) {
-                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), record.getSales_type()));
-                entity.setCustomer(customerService.getCustomer(record.getCustomer(), entity.getAzs()));
+            MoneyTransactionDto recordDto = objectMapper.readValue(message.getPayload(), MoneyTransactionDto.class);
+            if (recordDto.getExtId() == null) return null;
+
+            List<MoneyTransaction> existingRows = moneyTransactionRepository.findAllByExtId(recordDto.getExtId());
+            existingRows.forEach(r -> {
+                if (r.getRowNumber() > recordDto.getRowCount()) {
+                    moneyTransactionRepository.delete(r);
+                }
+            });
+
+            entity = moneyTransactionRepository.findByExtIdAndRowNumber(recordDto.getExtId(),recordDto.getRowNumber()).orElse(new MoneyTransaction());
+            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(recordDto.getAzs()).orElse(null));
+            entity.setDate(recordDto.getDate());
+            entity.setExtId(recordDto.getExtId());
+            if(recordDto.getSum() == null){
+                entity.setSum(0.0);
+            }else {
+                entity.setSum(recordDto.getSum());
             }
+            entity.setShift(recordDto.getShift());
+            entity.setSales_type(recordDto.getSales_type());
+            entity.setCostItem(recordDto.getCostItem());
+            entity.setWorker(recordDto.getWorker());
+            entity.setRowNumber(recordDto.getRowNumber());
+            if (entity.getAzs() != null) {
+                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), recordDto.getSales_type()));
+                entity.setCustomer(customerService.getCustomer(recordDto.getCustomer(), entity.getAzs()));
+            }
+            entity = moneyTransactionRepository.save(entity);
         } catch (JsonProcessingException e) {
             log.error("Can't convert payload to MoneyTransactionDto {} from {}", message.getIndex(), message.getSender());
         }
         return entity;
+    }
+
+    @Transactional
+    public Integer delete(UUID extId) {
+        return moneyTransactionRepository.deleteByExtId(extId);
     }
 }

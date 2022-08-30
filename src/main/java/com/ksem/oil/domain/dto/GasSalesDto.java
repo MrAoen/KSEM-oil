@@ -1,5 +1,6 @@
 package com.ksem.oil.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ksem.oil.domain.entity.GasolineType;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,12 +16,21 @@ public class GasSalesDto {
     LocalDateTime date;
     int tank;
     int trk;
-    Long sales_type;
+    @JsonProperty("sales_type")
+    Long salesType;
     Long shift;
     Double liter;
     Double count;
     Double price;
     Double sum;
-    Long check_number;
+    @JsonProperty("check_number")
+    Long checkNumber;
     UUID extId;//ГУИД на точке
+    String customer;
+    String manager;
+    String comment;
+    @JsonProperty("row_number")
+    int rowNumber;
+    @JsonProperty("row_count")
+    int rowCount;
 }

@@ -4,5 +4,6 @@ public enum GasolineType {
     GAS92,
     GAS95,
     DIESEL,
-    LPG
+    LPG,
+    UNKNOWN
 }

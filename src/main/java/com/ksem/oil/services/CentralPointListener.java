@@ -2,14 +2,12 @@ package com.ksem.oil.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.exceptions.InvalidMessage;
 import com.ksem.oil.exceptions.InvalidMessageType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,8 +17,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 
@@ -31,48 +27,62 @@ public class CentralPointListener {
     @Autowired
     ApplicationContext context;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @KafkaListener(topics = "AZS2Central")
     public void pollCentralMessages(@Payload String message,
-        @Header(KafkaHeaders.OFFSET) Long offset
-        ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        objectMapper.setDateFormat(df);
-        objectMapper.registerModule(new JavaTimeModule());
-        JSONArray incomeObjects = new JSONArray();
+                                    @Header(KafkaHeaders.OFFSET) Long offset
+    ) {
+
+        var incomeObjects = new JSONArray();
         try {
             incomeObjects = new JSONArray(message);
         } catch (JSONException e) {
             log.error("Income structure in not JSONArray");
         }
-        String errorCounter = "";
-        for(int index = 0; index< incomeObjects.length(); index++){
+        var errorCounter = "";
+        for (var index = 0; index < incomeObjects.length(); index++) {
             //мусор выкидываем молча
-            JSONObject obj = incomeObjects.optJSONObject(index);
-            if(obj != null){
+            var obj = incomeObjects.optJSONObject(index);
+            if (obj != null) {
                 TransportMessage msg = null;
                 try {
-                    msg = objectMapper.readValue(obj.toString(),TransportMessage.class);
-                    msg.setIndex(offset);
-                    execMessageProcessor(msg);
-                    msg.setIndex(offset);
+                    msg = objectMapper.readValue(obj.toString(), TransportMessage.class);
+                    if (msg != null) {
+                        msg.setIndex(offset);
+                        execMessageProcessor(msg);
+                        msg.setIndex(offset);
+                    }
                 } catch (JsonProcessingException e) {
-                    errorCounter = new StringBuilder(errorCounter).append(",").append(index).toString();
+                    errorCounter = errorCounter + "," + index;
                 }
             }
         }
-        if(!errorCounter.isEmpty())
+        if (!errorCounter.isEmpty())
             throw new InvalidMessage(errorCounter);
     }
 
     private void execMessageProcessor(TransportMessage msg) {
+        var packageName = "com.ksem.oil.services.";
         try {
-            Class<?> clazz = Class.forName("com.ksem.oil.services." + msg.getType() );
+            if (msg == null || msg.toString().isEmpty()) {
+                log.warn("empty message appear.");
+                return;
+            }
+            Class<?> clazz = Class.forName(packageName + msg.getType());
             Object service = context.getBean(clazz);
-            Method method = Arrays.stream(clazz.getMethods()).filter(p->p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
+            var method = Arrays.stream(clazz.getMethods()).filter(p -> p.getName().equals("convertEntityFromMessage")).findFirst().orElseThrow(NoSuchMethodException::new);
             method.invoke(service, msg);
-        }catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-            throw new InvalidMessageType("com.ksem.oil.services" + msg.getType() + "Service.class");
+        } catch (ClassNotFoundException e) {
+            throw new InvalidMessageType(packageName + msg.getType() + ".class not found! with message:" + e.getMessage());
+        } catch (NoSuchMethodException e) {
+            throw new InvalidMessageType(packageName + msg.getType() + ".class method convertEntityFromMessage not found! with message:" + e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new InvalidMessageType(packageName + msg.getType() + ".class illegal access to method with message:" + e.getMessage());
+        } catch (InvocationTargetException e) {
+            log.warn("Message with trowble:", msg);
+            throw new InvalidMessageType(packageName + msg.getType() + " original message:" + msg.toString() + ".class invoc exception with message:" + e.getMessage());
         }
     }
 

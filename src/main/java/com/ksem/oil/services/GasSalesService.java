@@ -7,51 +7,70 @@ import com.ksem.oil.domain.dto.TransportMessage;
 import com.ksem.oil.domain.entity.Azs;
 import com.ksem.oil.domain.entity.GasSales;
 import com.ksem.oil.domain.repository.GasSalesRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GasSalesService implements MessageProcessor<GasSales> {
 
     private final GasSalesRepository gasSalesRepository;
     private final AzsService azsService;
     private final Global2LocalService global2LocalService;
+    private final ObjectMapper objectMapper;
+    private final CustomerService customerService;
 
     @Override
     public GasSales convertEntityFromMessage(TransportMessage message) {
         GasSales entity = null;
-        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
-            GasSalesDto record = objectMapper.readValue(message.getPayload(), GasSalesDto.class);
-            if (record.getExtId() == null) return null;
-            entity = gasSalesRepository.findByExtId(record.getExtId()).orElse(new GasSales());
-            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(record.getAzs()).orElse(null));
-            entity.setCount(record.getCount());
-            entity.setCheckNumber(record.getCheck_number());
-            entity.setExtId(record.getExtId());
-            entity.setGasolineType(record.getGasolineType());
-            entity.setLiter(record.getLiter());
-            entity.setPrice(record.getPrice());
-            entity.setSales_type(record.getSales_type());
-            entity.setShift(record.getShift());
-            entity.setSum(record.getSum());
-            entity.setTank(record.getTank());
-            entity.setTrk(record.getTrk());
-            entity.setDate(record.getDate());
+            GasSalesDto salesDto = objectMapper.readValue(message.getPayload(), GasSalesDto.class);
+            if (salesDto.getExtId() == null) return null;
+            List<GasSales> existingRows = gasSalesRepository.findAllByExtId(salesDto.getExtId());
+            existingRows.forEach(r -> {
+                if (r.getRowNumber() > salesDto.getRowCount()) {
+                    gasSalesRepository.delete(r);
+                }
+            });
+            entity = gasSalesRepository.findByExtIdAndRowNumber(salesDto.getExtId(), salesDto.getRowNumber())
+                    .orElse(new GasSales());
+            if (entity.getAzs() == null) entity.setAzs(azsService.getAzs(salesDto.getAzs()).orElse(null));
+            entity.setCount(salesDto.getCount());
+            entity.setCheckNumber(salesDto.getCheckNumber());
+            entity.setExtId(salesDto.getExtId());
+            entity.setGasolineType(salesDto.getGasolineType());
+            entity.setLiter(salesDto.getLiter());
+            entity.setPrice(salesDto.getPrice());
+            entity.setSales_type(salesDto.getSalesType());
+            entity.setShift(salesDto.getShift());
+            if(salesDto.getSum() == null){
+                entity.setSum(0.0);
+            }else {
+                entity.setSum(salesDto.getSum());
+            }
+            entity.setTank(salesDto.getTank());
+            entity.setTrk(salesDto.getTrk());
+            entity.setDate(salesDto.getDate());
+            entity.setManager(salesDto.getManager());
+            entity.setComment(salesDto.getComment());
+            entity.setRowNumber(salesDto.getRowNumber());
             if (entity.getAzs() != null) {
-                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), record.getSales_type()));
+                entity.setCustomer(customerService.getCustomer(salesDto.getCustomer(), entity.getAzs()));
+                entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), salesDto.getSalesType()));
             }
             return gasSalesRepository.save(entity);
         } catch (JsonProcessingException e) {
-            log.error("Can't convert payload to GasSalesDto {} from {}", message.getIndex(),message.getSender());
+            log.error("Can't convert payload to GasSalesDto {} from {}", message.getIndex(), message.getSender());
         }
         return entity;
     }
@@ -62,5 +81,10 @@ public class GasSalesService implements MessageProcessor<GasSales> {
                 , date.with(ChronoField.NANO_OF_DAY, 0)
                 , date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay())
         );
+    }
+
+    @Transactional
+    public Integer delete(UUID extId) {
+        return gasSalesRepository.deleteByExtId(extId);
     }
 }

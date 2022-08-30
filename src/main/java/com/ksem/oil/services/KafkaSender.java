@@ -1,6 +1,6 @@
 package com.ksem.oil.services;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -8,9 +8,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class KafkaSender {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
@@ -24,13 +26,19 @@ public class KafkaSender {
 
             @Override
             public void onSuccess(SendResult<String, String> result) {
-                log.info("Sent message=[" + message +
-                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                log.info("pkg on {} for topic=[{}] with offset=[{}] strts with={}",
+                        result.getRecordMetadata().timestamp(),
+                        topicName,
+                        result.getRecordMetadata().offset(),
+                        message.substring(message.length()-1<32 ? 0 : 32, Math.min(71,message.length()-1)));
             }
+
             @Override
             public void onFailure(Throwable ex) {
-                log.error("Unable to send message=["
-                        + message + "] due to : " + ex.getMessage());
+                log.error("err on {} for topic=[{}] message strts with={}",
+                        LocalDateTime.now(),
+                        topicName,
+                        message);
             }
         });
     }
