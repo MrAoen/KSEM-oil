@@ -58,4 +58,7 @@ public class MoneyTransaction {
 
     @Column(name = "row_number")
     int rowNumber;
+
+    @Column(name = "comment")
+    String comment;
 }

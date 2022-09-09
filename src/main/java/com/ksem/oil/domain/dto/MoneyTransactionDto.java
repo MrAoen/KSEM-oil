@@ -24,4 +24,5 @@ public class MoneyTransactionDto {
     int rowNumber;
     @JsonProperty("row_count")
     int rowCount;
+    String comment;
 }

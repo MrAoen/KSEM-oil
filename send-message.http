@@ -158,3 +158,20 @@ Content-Type: application/json
 [{"message":"авто регистрация","sender":"А5","type":"GasSalesService","payload":{"azs":"А5","gasolineType":"2","date":"2022-01-01T06:44:43","tank":"000000004","trk":"18","sales_type":"000000002","shift":"344","liter":"42","count":"42","sum":"1102.5","customer":"","check_number":"280328","price":"26.25","manager":"","comment":"  ","row_number":"1","row_count":"1","extId":"f134e795-6ad7-11ec-909f-96a257875983"}}]
 
 ###
+PUT http://localhost:8080/message/AZS2Central
+Content-Type: application/json
+
+[
+  {
+    "message": "авто регистрация",
+    "sender": "test-topic",
+    "type": "GasTotalService",
+    "payload": {
+      "azs": "A1",
+      "period": "2022-09-09T02:02:13",
+      "quantity": "3754.59",
+      "gasolineType": "1",
+      "tank": "00006"
+    }
+  }
+]
