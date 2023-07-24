@@ -30,7 +30,7 @@ public class KafkaSender {
                         result.getRecordMetadata().timestamp(),
                         topicName,
                         result.getRecordMetadata().offset(),
-                        message.substring(message.length()-1<32 ? 0 : 32, Math.min(71,message.length()-1)));
+                        message.substring(message.length()-1<128 ? 0 : 128, Math.min(128,message.length()-1)));
             }
 
             @Override
