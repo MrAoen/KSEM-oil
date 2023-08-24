@@ -27,6 +27,7 @@ public class MessageSenderReciver {
 
     @PutMapping("/{topicName}")
     public void push(@PathVariable @NotNull String topicName, @RequestBody String message) {
+        log.info("On controller: "+message);
         kafkaSender.sendMessage(topicName, message);
     }
 

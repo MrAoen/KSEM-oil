@@ -50,9 +50,11 @@ public class CentralPointListener {
                 try {
                     msg = objectMapper.readValue(obj.toString(), TransportMessage.class);
                     if (msg != null) {
-                        msg.setIndex(offset);
-                        execMessageProcessor(msg);
-                        msg.setIndex(offset);
+                        log.info("RCV msg: "+obj.toString());
+                        if(msg.getType()!=null) {
+                            msg.setIndex(offset);
+                            execMessageProcessor(msg);
+                        }
                     }
                 } catch (JsonProcessingException e) {
                     errorCounter = errorCounter + "," + index;
