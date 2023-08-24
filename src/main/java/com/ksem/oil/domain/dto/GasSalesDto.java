@@ -33,5 +33,5 @@ public class GasSalesDto {
     int rowNumber;
     @JsonProperty("row_count")
     int rowCount;
-    UUID uniqueIdOrder;
+    UUID uniqueIdOrder; //ГУИД заявки
 }
