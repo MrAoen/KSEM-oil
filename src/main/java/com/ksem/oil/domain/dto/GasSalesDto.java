@@ -35,4 +35,3 @@ public class GasSalesDto {
     int rowCount;
     UUID uniqueIdOrder; //ГУИД заявки
 }
-n
