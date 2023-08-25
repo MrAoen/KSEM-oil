@@ -80,4 +80,7 @@ public class GasSales {
 
     @Column(name = "row_number")
     int rowNumber;
+
+    @Column(name = "unique_id_order")
+    UUID globalId;
 }
