@@ -64,6 +64,7 @@ public class GasSalesService implements MessageProcessor<GasSales> {
             entity.setManager(salesDto.getManager());
             entity.setComment(salesDto.getComment());
             entity.setRowNumber(salesDto.getRowNumber());
+            entity.setUniqueIdOrder(salesDto.getUniqueIdOrder());
             if (entity.getAzs() != null) {
                 entity.setCustomer(customerService.getCustomer(salesDto.getCustomer(), entity.getAzs()));
                 entity.setGlobalSalesType(global2LocalService.localToGlobal(entity.getAzs(), salesDto.getSalesType()));
