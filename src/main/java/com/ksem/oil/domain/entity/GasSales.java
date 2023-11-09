@@ -82,5 +82,5 @@ public class GasSales {
     int rowNumber;
 
     @Column(name = "unique_id_order")
-    UUID globalId;
+    UUID uniqueIdOrder;
 }

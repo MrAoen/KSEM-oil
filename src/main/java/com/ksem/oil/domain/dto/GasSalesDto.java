@@ -33,5 +33,6 @@ public class GasSalesDto {
     int rowNumber;
     @JsonProperty("row_count")
     int rowCount;
+    @JsonProperty("unique_id_order")
     UUID uniqueIdOrder; 
 }
