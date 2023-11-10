@@ -63,6 +63,8 @@ public class CustomerService implements MessageProcessor<Customer> {
             entity.setName(recordDto.getName());
             entity.setGlobalId(recordDto.getGlobalId());
             entity.setAzs(azs);
+            entity.setEdrpou(recordDto.getEdrpou());
+            entity.setCashless(recordDto.getCashless());
             entity = customerRepository.save(entity);
         } catch (JsonProcessingException e) {
             log.error("Can't convert payload to CustomerDto {} from {}", message.getIndex(), message.getSender());

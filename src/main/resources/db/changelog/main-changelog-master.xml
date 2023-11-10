@@ -12,5 +12,6 @@
     <include file="4.cupon-sales.xml" relativeToChangelogFile="true"/>
     <include file="5.new-table-totals_new-column-money.xml" relativeToChangelogFile="true"/>
     <include file="6.new-column-gassales.xml" relativeToChangelogFile="true"/>
+    <include file="7.new-columns-сustomers.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
