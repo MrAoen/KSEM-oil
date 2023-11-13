@@ -33,4 +33,10 @@ public class Customer {
 
     @Column(name = "global_id")
     UUID globalId;
+
+    @Column(name = "edrpou")
+    String edrpou;
+
+    @Column(name = "cashless")
+    Boolean cashless;
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+   <changeSet id="18-customer table new column" author="Risha">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="customer" columnName="edrpou" />
+                <columnExists tableName="customer" columnName="cashless" />
+            </not>
+        </preConditions>
+        <addColumn tableName="customer">
+            <column name="edrpou" type="varchar(12)"/>
+            <column name="cashless" type="boolean"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

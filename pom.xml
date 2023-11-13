@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.ksem</groupId>
     <artifactId>oil</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.5</version>
     <name>oil</name>
     <description>Transport and Client support system for KSEM</description>
 
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>8.4.1.jre8</version>
+            <version>9.2.0.jre8</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

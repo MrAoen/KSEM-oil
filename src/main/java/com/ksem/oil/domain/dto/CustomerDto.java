@@ -11,4 +11,6 @@ public class CustomerDto {
     String name;
     String azs;
     UUID globalId;
+    String edrpou;
+    Boolean cashless;
 }
