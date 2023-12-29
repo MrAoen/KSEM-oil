@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <changeSet id="19.salary table" author="Risha">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="salary"/>
+            </not>
+        </preConditions>
+        <createTable tableName="salary">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_salary" unique="true"/>
+            </column>
+            <column name="extid" type="uniqueidentifier"/>
+            <column name="azs" type="bigint"/>
+            <column name="t_date" type="timestamp"/>
+            <column name="employee" type="varchar(64)"/>
+            <column name="position" type="varchar(64)"/>
+            <column name="liter" type="numeric(12,3)"/>
+            <column name="rate" type="numeric(12,2)"/>
+            <column name="sum_liter_rate" type="numeric(12,2)"/>
+            <column name="premium" type="numeric(12,2)"/>
+            <column name="total_salaries" type="numeric(12,2)"/>
+            <column name="prepayment_cashless" type="numeric(12,2)"/>
+            <column name="prepayment_cash" type="numeric(12,2)"/>
+            <column name="pay_out" type="numeric(12,2)"/>
+            <column name="comment" type="varchar(128)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="salary" baseColumnNames="azs" constraintName="azs_salary_id_fk"
+                                 referencedTableName="azs"
+                                 referencedColumnNames="id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION"/>
+    </changeSet>
+</databaseChangeLog>
