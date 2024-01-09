@@ -17,6 +17,8 @@ import java.util.UUID;
 public interface SalaryRepository extends JpaRepository<Salary, Long> {
     Optional<Salary> findByExtId(UUID extId);
 
+    Optional<Salary> findByExtIdAndRowNumber(UUID extId, int rowNumber);
+
     List<Salary> findAllByAzsAndDateBetween(Azs azs, LocalDateTime fromDate, LocalDateTime toDate);
 
     @Modifying

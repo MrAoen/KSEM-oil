@@ -29,4 +29,8 @@ public class SalaryDto {
     @JsonProperty("pay_out")
     Double payOut;
     String comment;
+    @JsonProperty("row_number")
+    int rowNumber;
+    @JsonProperty("row_count")
+    int rowCount;
 }

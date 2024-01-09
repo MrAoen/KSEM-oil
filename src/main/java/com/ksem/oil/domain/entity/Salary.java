@@ -59,4 +59,7 @@ public class Salary {
 
     @Column(name = "comment")
     String comment;
+
+    @Column(name = "row_number")
+    int rowNumber;
 }
