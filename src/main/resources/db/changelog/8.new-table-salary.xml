@@ -29,6 +29,7 @@
             <column name="prepayment_cash" type="numeric(12,2)"/>
             <column name="pay_out" type="numeric(12,2)"/>
             <column name="comment" type="varchar(128)"/>
+            <column name="row_number" type="int" defaultValue="1"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="salary" baseColumnNames="azs" constraintName="azs_salary_id_fk"
                                  referencedTableName="azs"
