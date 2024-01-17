@@ -48,4 +48,8 @@ public class Azs {
     @JsonIgnore
     @OneToMany(mappedBy = "azs", fetch = FetchType.LAZY)
     List<Global2LocalSalesType> global2LocalSalesTypeListList = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "azs", fetch = FetchType.LAZY)
+    List<Salary> salaryList = new ArrayList<>();
 }
